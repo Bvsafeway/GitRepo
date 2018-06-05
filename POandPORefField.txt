@@ -1,0 +1,42 @@
+--- SQL to get PO Req.Dlvr Date and Time, along with Customer Req. Del. date time from PO_ref_fields 
+WITH por AS (
+    SELECT
+        purchase_orders_id,
+        ref_field2
+    FROM
+        po_ref_fields 
+    WHERE
+        purchase_orders_id IN (
+            SELECT
+                purchase_orders_id
+            FROM
+                purchase_orders
+            WHERE
+                order_category = 62
+                --AND   trunc(requested_dlvr_dttm) = '03-JUN-2018'       
+        )
+),po AS (
+    SELECT
+        order_category,
+        entry_code,
+        tc_purchase_orders_id,
+        purchase_orders_id,
+        TO_CHAR(requested_dlvr_dttm,'mm/dd/yyyy hh24:mi') po_date,
+        purchase_orders_status
+    FROM
+        purchase_orders 
+    WHERE
+        order_category = 62
+        --AND   trunc(requested_dlvr_dttm) = '03-JUN-2018'     
+) SELECT
+    por.purchase_orders_id,
+    po.tc_purchase_orders_id,
+    po.entry_code,
+    po.po_date,
+    por.ref_field2
+  FROM
+    po,
+    por
+  WHERE
+    po.purchase_orders_id = por.purchase_orders_id and
+    po.po_date = por.ref_field2;
