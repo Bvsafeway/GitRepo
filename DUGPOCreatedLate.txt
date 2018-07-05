@@ -1,0 +1,17 @@
+--- Qry to find the time diff. between when the PO was created and when the Req.del.time was for the order.
+--- It should be atleast 2 hrs before the REq.Del.Time. There are times, we create close to the req.del.time.
+SELECT
+        p.order_category,
+        p.entry_code,
+        p.tc_purchase_orders_id,
+        p.purchase_orders_id,
+        TO_CHAR(p.requested_dlvr_dttm,'mm/dd/yyyy hh24:mi') po_date,
+        p.purchase_orders_status,
+        TO_CHAR(p.created_dttm,'mm/dd/yyyy hh24:mi') po_crt_date,
+        p.requested_dlvr_dttm - p.created_dttm timediff
+    FROM
+        purchase_orders p 
+    WHERE
+        p.order_category = 62
+        AND   trunc(p.requested_dlvr_dttm) >= '19-JUN-2018'        
+        ;

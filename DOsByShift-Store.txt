@@ -1,0 +1,24 @@
+--- List of orders for 3rd shift for a given day for some stores.
+SELECT
+    TO_CHAR(created_dttm,'mm/dd/yyyy hh:mi:ss AM'),
+    created_source,
+    o_facility_alias_id,
+    ext_purchase_order
+FROM
+    orders
+WHERE
+    o_facility_alias_id IN (
+        '0174',
+        '0249',
+        '1663',
+        '0250',
+        '1201',
+        '2676',
+        '2821',
+        '2809'
+    )
+    AND   ref_num5 = '3'
+    AND   trunc(created_dttm) = '18-JUN-2018'
+    AND   created_source = 'Gateway'
+ORDER BY
+    created_dttm ASC;

@@ -1,0 +1,46 @@
+--- SQL to get PO created time and DO Created time along with PO Status.
+WITH po AS (
+    SELECT
+        tc_purchase_orders_id customer_order_number,
+        entry_code store_nbr,
+        purchase_orders_status,
+        TO_CHAR(created_dttm,'mm/dd/yyyy hh:mi:ss AM') created_date,
+        TO_CHAR(requested_dlvr_dttm,'mm/dd/yyyy hh:mi:ss AM') requested_dlvr_date
+    FROM
+        purchase_orders
+    WHERE
+        trunc(requested_dlvr_dttm) >= '01-APR-2018'
+        AND   order_category = '62'  
+    ORDER BY
+        requested_dlvr_dttm
+),do AS (
+    SELECT
+        ext_purchase_order dopo,
+        MIN(created_dttm) docreatedate
+    FROM
+        orders
+    WHERE
+        ext_purchase_order IN (
+            SELECT
+                tc_purchase_orders_id
+            FROM
+                purchase_orders
+            WHERE
+                trunc(requested_dlvr_dttm) >= '01-APR-2018'
+                AND   order_category = '62'  
+        )
+    GROUP BY
+        ext_purchase_order
+    ORDER BY
+        ext_purchase_order
+) SELECT
+    customer_order_number,
+    store_nbr,
+    purchase_orders_status,
+    created_date,
+    requested_dlvr_date,
+    docreatedate
+  FROM
+    po left outer join
+    do
+  on  po.customer_order_number = do.dopo;

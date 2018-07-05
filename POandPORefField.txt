@@ -1,10 +1,12 @@
---- SQL to get PO Req.Dlvr Date and Time, along with Customer Req. Del. date time from PO_ref_fields 
+--- SQL to get PO Req.Dlvr Date and Time, along with Customer Req. Del. date time from PO_ref_fields. Exclude Mountain time stores. 
+--- Use this query to find out, if we are creating DO's when we are supposed to be. As the timezone was not correct due to Zipcode issue, Customer quoted
+--- time is not translated to the store time zone, when it was stamped in Req_dlvr_time in PO.
 WITH por AS (
     SELECT
         purchase_orders_id,
         ref_field2
     FROM
-        po_ref_fields 
+        po_ref_fields
     WHERE
         purchase_orders_id IN (
             SELECT
@@ -13,7 +15,7 @@ WITH por AS (
                 purchase_orders
             WHERE
                 order_category = 62
-                --AND   trunc(requested_dlvr_dttm) = '03-JUN-2018'       
+                AND   trunc(requested_dlvr_dttm) >= '09-JUN-2018'
         )
 ),po AS (
     SELECT
@@ -24,10 +26,17 @@ WITH por AS (
         TO_CHAR(requested_dlvr_dttm,'mm/dd/yyyy hh24:mi') po_date,
         purchase_orders_status
     FROM
-        purchase_orders 
+        purchase_orders
     WHERE
         order_category = 62
-        --AND   trunc(requested_dlvr_dttm) = '03-JUN-2018'     
+        AND   trunc(requested_dlvr_dttm) >= '09-JUN-2018'
+        AND   entry_code NOT IN (
+            SELECT facility_name FROM  facility_alias WHERE facility_id IN (
+                    SELECT facility_id FROM facility WHERE facility_tz IN ( 
+                            SELECT time_zone_id  FROM time_zone WHERE gmt_offset =-7
+                        )
+                )
+        )
 ) SELECT
     por.purchase_orders_id,
     po.tc_purchase_orders_id,
@@ -38,5 +47,28 @@ WITH por AS (
     po,
     por
   WHERE
-    po.purchase_orders_id = por.purchase_orders_id and
-    po.po_date = por.ref_field2;
+    po.purchase_orders_id = por.purchase_orders_id
+    AND   po.po_date = por.ref_field2;
+
+
+--- List of Mountain time zone stores.
+SELECT
+    facility_name
+FROM
+    facility_alias
+WHERE
+    facility_id IN (
+        SELECT
+            facility_id
+        FROM
+            facility
+        WHERE
+            facility_tz IN (
+                SELECT
+                    time_zone_id
+                FROM
+                    time_zone
+                WHERE
+                    gmt_offset =-7
+            )
+    );

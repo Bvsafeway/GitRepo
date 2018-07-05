@@ -1,0 +1,4 @@
+--Scheduler hourly processed totes
+select TO_CHAR(luDttm,'DD-MON-YYYY HH24:MI:SS'), luDttm, count from (
+select trunc((last_updated_dttm),'HH') as luDttm, count(distinct order_id) as count from order_line_item where ref_field6 is not null
+group by trunc((last_updated_dttm),'HH') )order by 2 desc;
