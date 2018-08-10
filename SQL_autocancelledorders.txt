@@ -1,0 +1,2 @@
+--- ecommReporting. Open Qry.
+select * from AutoCancelOrders where cancelleddate > '2018-06-01'  order by cancelleddate desc;

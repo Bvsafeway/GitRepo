@@ -1,0 +1,3 @@
+select tc_order_id,ext_purchase_order, o_facility_alias_id, do_status, created_dttm,last_updated_dttm, ref_field_9,ref_field_1 from orders where order_id not in (select parent_object_id from WORK_BATCH_DTL 
+where batch_detail_id in (select work_batch_dtl_id from work_batch_dtl_template_tag))
+and DO_STATUS = 100 and LAST_UPDATED_DTTM < systimestamp-(15/1440);

@@ -1,0 +1,28 @@
+UPDATE osflca.po_ref_fields
+SET
+ref_field1 = 'UR11',
+ref_field2 = '07/10/18 17:02',  
+ref_field3 = '1111111',
+ref_field4 = '07/10/18 17:02',  
+ref_field5 = '001',
+ref_field6 = '07/10/18 17:02',  
+ref_field7 = '07/10/18 17:02'  
+WHERE
+purchase_orders_id = (
+SELECT
+purchase_orders_id
+FROM
+osflca.purchase_orders
+WHERE
+tc_purchase_orders_id = '16355'  
+);
+
+commit;
+
+
+select to_char(REQUESTED_DLVR_DTTM,'mm/dd/yyyy HH:MI:SS PM'), 
+purchase_orders_id,entry_code,PURCHASE_ORDERS_STATUS from purchase_orders where tc_purchase_orders_id = '1447810';
+
+select * from po_ref_fields where purchase_orders_id = '189115';
+
+select * from po_wmprocessinfo where  purchase_orders_id = '189115';
