@@ -1,0 +1,8 @@
+select facility_id,facility_alias_id from facility_alias where facility_id in (
+SELECT DISTINCT f.FACILITY_ID from C_STORE_SECTION_CATEGORY f
+where rowid not in
+(select max(rowid) from C_STORE_SECTION_CATEGORY s
+where f.FACILITY_ID = s.FACILITY_ID
+and f.CATEGORY_ID = s.CATEGORY_ID));
+
+-- Has to be 0

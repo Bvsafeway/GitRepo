@@ -1,0 +1,30 @@
+select * from osflca.fac_seq where facility_alias_id in ('1502','2712');
+--1502,2712
+
+delete from fac_seq where facility_alias_id ='1502';
+
+select to_char(SCHEDULED_DTTM,'mm/dd/yyyy hh:mi:ss PM') from om_sched_event where event_objects like '%DUGOrder%' and IS_EXECUTED = 0;
+
+select * from om_sched_event where event_objects like '%DUGO%' and IS_EXECUTED = 0;
+
+update om_sched_event set SCHEDULED_DTTM = SYSDATE + 0.0001 where event_id = 194382;
+
+commit;
+
+select to_char(SCHEDULED_DTTM,'mm/dd/yyyy hh:mi:ss PM') from om_sched_event where event_objects like '%DUG O%' and IS_EXECUTED = 0 
+order by SCHEDULED_DTTM asc ;
+
+select * from om_sched_event  where event_objects like '%DUG O%' and IS_EXECUTED = 0 
+order by SCHEDULED_DTTM asc ;
+
+update om_sched_event set SCHEDULED_DTTM = SYSDATE + 0.0001 where event_id = 194252;
+
+commit;
+
+
+select to_char(REQUESTED_DLVR_DTTM,'mm/dd/yyyy HH:MI:SS PM'), 
+entry_code,tc_purchase_orders_id,PURCHASE_ORDERS_STATUS,purchase_orders_id from purchase_orders where  
+tc_purchase_orders_id = '143087888'
+order by created_dttm asc;
+
+select * from po_ref_fields where purchase_orders_id = '41690';

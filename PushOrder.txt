@@ -1,0 +1,36 @@
+
+UPDATE osflca.po_ref_fields
+SET
+ref_field1 = 'UR11',
+ref_field2 = '08/14/18 22:02',  
+ref_field3 = '1111111',
+ref_field4 = '08/14/18 22:02',  
+ref_field5 = '001',
+ref_field6 = '08/14/18 22:02',  
+ref_field7 = '08/14/18 22:02'  
+WHERE
+purchase_orders_id = (
+SELECT
+purchase_orders_id
+FROM
+osflca.purchase_orders
+WHERE
+tc_purchase_orders_id = '2073734'  
+);
+
+commit;
+
+
+select to_char(REQUESTED_DLVR_DTTM,'mm/dd/yyyy HH:MI:SS PM'), 
+entry_code,tc_purchase_orders_id,PURCHASE_ORDERS_STATUS,purchase_orders_id from purchase_orders where  
+tc_purchase_orders_id in ( '2072978', '2073184', '2073734')
+order by created_dttm asc;
+
+select ref_field_10 from orders where ext_purchase_order = '2073184';
+select ref_field_10 from orders where ext_purchase_order = '2072978';
+select ref_field_10 from orders where ext_purchase_order = '2073734';
+
+update orders set ref_field_10='R' where ext_purchase_order = '2073734';
+
+commit;
+

@@ -1,0 +1,1 @@
+select * from TRAN_LOG where CREATED_DTTM > sysdate - interval '10' minute ;
