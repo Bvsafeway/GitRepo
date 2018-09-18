@@ -1,22 +1,22 @@
---- This Query is to find all cancelled DUG PO's and if we had DO's created for them, when it was cancelled.
 WITH po AS (
     SELECT
         tc_purchase_orders_id customer_order_number,
         entry_code store_nbr,
         purchase_orders_status,
         TO_CHAR(created_dttm,'mm/dd/yyyy hh:mi:ss AM') created_date,
-        TO_CHAR(requested_dlvr_dttm,'mm/dd/yyyy hh:mi:ss AM') requested_dlvr_date
+        TO_CHAR(requested_dlvr_dttm,'mm/dd/yyyy hh:mi:ss AM') requested_dlvr_date,
+        requested_dlvr_dttm
     FROM
         purchase_orders
     WHERE
-        trunc(requested_dlvr_dttm) >= '05-JUN-2018'
+        trunc(requested_dlvr_dttm) >= '26-AUG-2018'
         AND   order_category = '62' and purchase_orders_status = '940'
-    ORDER BY
+   ORDER BY
         requested_dlvr_dttm
 ),do AS (
     SELECT
         ext_purchase_order dopo,
-        MIN(created_dttm) docreatedate
+        MIN(created_dttm) docreatedate        
     FROM
         orders
     WHERE
@@ -26,7 +26,7 @@ WITH po AS (
             FROM
                 purchase_orders
             WHERE
-                trunc(requested_dlvr_dttm) >= '05-JUN-2018'
+                trunc(requested_dlvr_dttm) >= '26-AUG-2018'
                 AND   order_category = '62' and purchase_orders_status = '940'
         )
     GROUP BY
@@ -39,8 +39,11 @@ WITH po AS (
     purchase_orders_status,
     created_date,
     requested_dlvr_date,
-    docreatedate
+    TO_CHAR(docreatedate,'mm/dd/yyyy hh:mi:ss AM') docreatedate,
+    requested_dlvr_dttm - docreatedate
   FROM
     po left outer join
     do
   on  po.customer_order_number = do.dopo;
+  
+ 

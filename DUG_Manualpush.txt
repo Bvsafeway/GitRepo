@@ -1,0 +1,17 @@
+PO REF FIELD is already updated.
+
+Just create DO from UI.
+
+update orders set REF_FIELD_10 = 'R' where ext_purchase_order = '18000';
+
+select to_char(REQUESTED_DLVR_DTTM,'mm/dd/yyyy HH:MI:SS PM'), 
+purchase_orders_id,entry_code,PURCHASE_ORDERS_STATUS from purchase_orders where tc_purchase_orders_id = '1447810';
+
+select * from po_ref_fields where purchase_orders_id = '189115';
+
+select * from po_wmprocessinfo where  purchase_orders_id = '189115';
+
+
+select to_char(REQUESTED_DLVR_DTTM,'mm/dd/yyyy HH:MI:SS PM'), 
+entry_code,tc_purchase_orders_id,PURCHASE_ORDERS_STATUS,purchase_orders_id from purchase_orders where  entry_code = '3250'
+order by created_dttm asc;
