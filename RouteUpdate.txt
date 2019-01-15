@@ -15,7 +15,9 @@ FROM
 osflca.purchase_orders
 WHERE
 tc_purchase_orders_id = '16355'  
-);
+)
+and 
+ref_field1 = null;
 
 commit;
 
