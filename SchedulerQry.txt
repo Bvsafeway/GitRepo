@@ -28,3 +28,17 @@ tc_purchase_orders_id = '143087888'
 order by created_dttm asc;
 
 select * from po_ref_fields where purchase_orders_id = '41690';
+
+-----
+
+SELECT * FROM OM_SCHED_EVENT WHERE EVENT_OBJECTS LIKE '%DUG DO Create%' AND IS_EXECUTED=0;
+
+ 
+
+UPDATE OM_SCHED_EVENT SET EVENT_FREQ_IN_DAYS=0, EVENT_FREQ_PER_DAY=96 WHERE EVENT_ID=252481;
+
+ 
+
+UPDATE OM_SCHED_EVENT SET IS_EXECUTED=1 WHERE EVENT_OBJECTS LIKE '%DUG DO Create%' AND EVENT_ID NOT IN (252481);
+
+----
