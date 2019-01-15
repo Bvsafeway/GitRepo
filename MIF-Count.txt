@@ -1,0 +1,7 @@
+select  extract( hour from created_dttm) ,count(*) from tran_log where trunc(CREATED_DTTM) = trunc(sysdate) and msg_type = 'Category Data' group by extract( hour from created_dttm );
+
+ORDER_STATUS_VPOS
+ORDER_STATUS_TMS
+Customer Order
+Item
+Category Data

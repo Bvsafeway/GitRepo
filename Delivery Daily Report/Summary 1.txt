@@ -1,0 +1,124 @@
+      WITH tz AS (
+    SELECT
+        facility_alias_id,
+        facility_tz,
+        gmt_offset,
+        tz.time_zone_display_name
+    FROM
+        facility_alias fa,
+        facility f,
+        time_zone tz
+    WHERE
+        fa.facility_id = f.facility_id
+        AND f.facility_tz = tz.time_zone_id
+),po AS (
+    SELECT
+        po.tc_purchase_orders_id customer_order_number,
+        po.entry_code store_nbr,
+        po.purchase_orders_status,
+        po.created_dttm created_date,
+        po.requested_dlvr_dttm requested_dlvr_date,
+        po.requested_dlvr_dttm
+    FROM
+        purchase_orders po
+    WHERE
+  trunc(requested_dlvr_dttm) >= trunc(SYSDATE)
+        AND order_category = '2'
+    ORDER BY
+        requested_dlvr_dttm
+),do AS (
+    SELECT
+        ext_purchase_order dopo,
+        MIN(created_dttm) docreatedate,
+        ref_num5
+    FROM
+        orders
+    WHERE
+        ext_purchase_order IN (
+            SELECT
+                tc_purchase_orders_id
+            FROM
+                purchase_orders
+            WHERE
+  trunc(requested_dlvr_dttm) >= trunc(SYSDATE)
+                AND order_category = '2'
+        )
+    GROUP BY
+        ext_purchase_order,
+        ref_num5
+    ORDER BY
+        ext_purchase_order,
+        ref_num5
+) SELECT
+    time_zone_display_name as time_zone,
+     ref_num5 AS shift,    
+     count(1) as OrderCount
+  FROM
+    po
+    LEFT OUTER JOIN do ON po.customer_order_number = do.dopo
+    INNER JOIN tz ON po.store_nbr = tz.facility_alias_id
+  WHERE
+    (
+        (
+            ref_num5 IN (
+                1,
+                2
+            )
+            AND (
+                (
+                    gmt_offset IN (
+                        '-6',
+                        '-5'
+                    )
+                    AND EXTRACT(HOUR FROM docreatedate) > '01'
+                )
+                OR (
+                    gmt_offset = '-7'
+                    AND EXTRACT(HOUR FROM docreatedate) > '02'
+                )
+                OR (
+                    gmt_offset = '-8'
+                    AND EXTRACT(HOUR FROM docreatedate) > '03'
+                )
+                OR (
+                    gmt_offset = '-10'
+                    AND EXTRACT(HOUR FROM docreatedate) > '06'
+                )
+            )
+        )
+        OR (
+            ref_num5 = 3
+            AND (
+                (
+                    gmt_offset IN (
+                        '-5'
+                    )
+                    AND EXTRACT(HOUR FROM docreatedate) > '10'
+                )
+                OR (
+                    gmt_offset IN (
+                        '-6'
+                    )
+                    AND EXTRACT(HOUR FROM docreatedate) > '11'
+                )
+                OR (
+                    gmt_offset = '-7'
+                    AND EXTRACT(HOUR FROM docreatedate) > '12'
+                )
+                OR (
+                    gmt_offset = '-8'
+                    AND EXTRACT(HOUR FROM docreatedate) > '13'
+                )
+                OR (
+                    gmt_offset = '-10'
+                    AND EXTRACT(HOUR FROM docreatedate) > '16'
+                )
+            )
+        )
+    )
+    group by
+    time_zone_display_name ,
+     ref_num5      
+     order by
+ time_zone_display_name ,
+     ref_num5
