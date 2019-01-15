@@ -1,0 +1,55 @@
+-- Qry to get the BPR_TPN and UPC for a given order.
+WITH oni AS (
+    SELECT
+        order_id,
+        line_item_id,
+        note
+    FROM
+        order_note
+    WHERE
+        note_code IS NOT NULL
+    GROUP BY
+        order_id,
+        line_item_id,
+        note
+),o AS (
+    SELECT
+        ext_purchase_order,
+        order_id,
+        o_facility_alias_id AS store_num
+    FROM
+        orders
+    WHERE
+        ext_purchase_order = '2704435'
+),oli AS (
+    SELECT
+        order_id,
+        line_item_id,
+        item_name,
+        description
+    FROM
+        order_line_item
+    WHERE
+        do_dtl_status = 190
+        AND order_id IN (
+            SELECT
+                order_id
+            FROM
+                orders
+            WHERE
+                ext_purchase_order = '2704435'
+        )
+) SELECT distinct
+    ext_purchase_order AS order_num,
+    oni.note AS upc,
+    store_num,
+    oli.item_name AS bpr_tpn,
+    description
+  FROM
+    oni
+    INNER JOIN o ON oni.order_id = o.order_id
+    INNER JOIN oli ON oni.order_id = oli.order_id
+                      AND oni.line_item_id = oli.line_item_id;
+    
+    
+   
